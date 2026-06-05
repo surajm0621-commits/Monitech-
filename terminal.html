@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitech Terminal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0e1a;color:#00E5FF;font-family:monospace;height:100vh;display:flex;flex-direction:column;}
+.topbar{background:#0d1224;padding:10px 15px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #00E5FF;}
+.topbar-logo{color:#00E5FF;font-weight:bold;font-size:16px;}
+.topbar-btns a{color:#aaa;margin-left:15px;text-decoration:none;font-size:13px;}
+.terminal{flex:1;padding:15px;overflow-y:auto;background:#000;}
+.line{margin:3px 0;font-size:14px;word-break:break-all;}
+.prompt{color:#00E5FF;}
+.output{color:#fff;}
+.error-line{color:red;}
+.input-row{display:flex;align-items:center;padding:10px 15px;background:#0d1224;border-top:1px solid #00E5FF;}
+.input-prompt{color:#00E5FF;margin-right:8px;font-size:14px;white-space:nowrap;}
+.cmd-input{flex:1;background:transparent;border:none;color:white;font-family:monospace;font-size:14px;outline:none;}
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="topbar-logo">⚡ MONITECH TERMINAL</div>
+<div class="topbar-btns">
+<a href="dashboard.html">Dashboard</a>
+<a href="index.html">Home</a>
+</div>
+</div>
+<div class="terminal" id="terminal">
+<div class="line output">███╗   ███╗ ██████╗ ███╗   ██╗██╗████████╗███████╗ ██████╗██╗  ██╗</div>
+<div class="line output">████╗ ████║██╔═══██╗████╗  ██║██║╚══██╔══╝██╔════╝██╔════╝██║  ██║</div>
+<div class="line output">██╔████╔██║██║   ██║██╔██╗ ██║██║   ██║   █████╗  ██║     ███████║</div>
+<div class="line output">██║╚██╔╝██║██║   ██║██║╚██╗██║██║   ██║   ██╔══╝  ██║     ██╔══██║</div>
+<div class="line output">██║ ╚═╝ ██║╚██████╔╝██║ ╚████║██║   ██║   ███████╗╚██████╗██║  ██║</div>
+<div class="line output">╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝   ╚═╝   ╚══════╝ ╚═════╝╚═╝  ╚═╝</div>
+<div class="line output" style="color:#aaa;margin-top:10px;">Monitech Terminal v1.0 — Type 'help' to see commands</div>
+<div class="line output" style="color:#aaa;">© 2026 MONITECH — For ethical use only</div>
+<div class="line output">─────────────────────────────────────────</div>
+</div>
+<div class="input-row">
+<span class="input-prompt">suraj@monitech:~$</span>
+<input class="cmd-input" id="cmdInput" placeholder="Type command..." autofocus/>
+</div>
+<script>
+var terminal=document.getElementById('terminal');
+var input=document.getElementById('cmdInput');
+var history=[];
+var histIndex=-1;
+
+var commands={
+'help':function(){return `Available Commands:
+━━━━━━━━━━━━━━━━━━━━━━━━
+System:
+  whoami     — Show current user
+  date       — Show current date
+  clear      — Clear terminal
+  echo [txt] — Print text
+  
+Network:
+  ping [site]     — Ping a website
+  nslookup [site] — DNS lookup
+  myip            — Show your IP info
+  
+Tools:
+  encode [text]   — Base64 encode
+  decode [text]   — Base64 decode
+  hash [text]     — MD5 hash info
+  
+Info:
+  about      — About Monitech
+  version    — Terminal version
+━━━━━━━━━━━━━━━━━━━━━━━━`;},
+'whoami':function(){return 'suraj — Monitech Admin 👑';},
+'date':function(){return new Date().toString();},
+'version':function(){return 'Monitech Terminal v1.0';},
+'about':function(){return 'Monitech — Your Personal Hacking Lab\nBuilt by Suraj | © 2026';},
+'myip':function(){
+fetch('https://api.ipify.org?format=json')
+.then(r=>r.json())
+.then(d=>print('Your IP: '+d.ip));
+return 'Fetching IP...';},
+'clear':function(){terminal.innerHTML='';return null;}
+};
+
+function print(text,type){
+type=type||'output';
+var div=document.createElement('div');
+div.className='line '+(type==='error'?'error-line':type==='prompt'?'prompt':'output');
+div.textContent=text;
+terminal.appendChild(div);
+terminal.scrollTop=terminal.scrollHeight;
+}
+
+input.addEventListener('keydown',function(e){
+if(e.key==='Enter'){
+var cmd=input.value.trim();
+if(!cmd)return;
+history.unshift(cmd);
+histIndex=-1;
+print('suraj@monitech:~$ '+cmd,'prompt');
+var parts=cmd.split(' ');
+var base=parts[0].toLowerCase();
+var args=parts.slice(1).join(' ');
+
+if(base==='echo'){print(args||'');}
+else if(base==='ping'){print('Pinging '+args+'...\nNote: Real ping not available in browser.\nUse nslookup instead.');}
+else if(base==='nslookup'){
+if(!args){print('Usage: nslookup [domain]','error');}
+else{
+fetch('https://dns.google/resolve?name='+args+'&type=A')
+.then(r=>r.json())
+.then(d=>{
+if(d.Answer){d.Answer.forEach(a=>print(args+' → '+a.data));}
+else{print('No DNS record found for: '+args,'error');}
+});
+print('Looking up '+args+'...');}}
+else if(base==='encode'){
+if(!args){print('Usage: encode [text]','error');}
+else{print(btoa(args));}}
+else if(base==='decode'){
+if(!args){print('Usage: decode [text]','error');}
+else{try{print(atob(args));}catch(e){print('Invalid base64!','error');}}}
+else if(base==='hash'){print('MD5 hashing requires backend.\nUse: https://www.md5hashgenerator.com');}
+else if(commands[base]){var r=commands[base]();if(r!==null&&r!==undefined)print(r);}
+else{print('Command not found: '+cmd+'\nType "help" for available commands','error');}
+input.value='';
+}
+if(e.key==='ArrowUp'){if(histIndex<history.length-1){histIndex++;input.value=history[histIndex];}}
+if(e.key==='ArrowDown'){if(histIndex>0){histIndex--;input.value=history[histIndex];}else{histIndex=-1;input.value='';}}
+});
+</script>
+</body>
+</html>
