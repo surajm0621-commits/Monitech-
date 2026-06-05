@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitech - Login</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0e1a;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:Arial,sans-serif;}
+.login-box{background:#0d1224;border:1px solid #00E5FF;border-radius:15px;padding:40px;width:90%;max-width:400px;text-align:center;}
+.logo{color:#00E5FF;font-size:28px;font-weight:bold;letter-spacing:3px;margin-bottom:10px;}
+.subtitle{color:#aaa;margin-bottom:30px;font-size:14px;}
+input{width:100%;padding:12px;margin:10px 0;background:#0a0e1a;border:1px solid #00E5FF;border-radius:5px;color:white;font-size:16px;outline:none;}
+input::placeholder{color:#555;}
+.btn{width:100%;padding:12px;background:#00E5FF;color:#0a0e1a;font-weight:bold;font-size:16px;border:none;border-radius:5px;cursor:pointer;margin-top:10px;}
+.error{color:red;font-size:14px;margin-top:10px;display:none;}
+.footer-text{color:#555;font-size:12px;margin-top:20px;}
+</style>
+</head>
+<body>
+<div class="login-box">
+<div class="logo">MONITECH</div>
+<p class="subtitle">Your Digital Future Starts Here</p>
+<input type="text" id="username" placeholder="Username"/>
+<input type="password" id="password" placeholder="Password"/>
+<button class="btn" onclick="login()">Login</button>
+<p class="error" id="error">❌ Wrong username or password!</p>
+<p class="footer-text">© 2026 MONITECH</p>
+</div>
+<script>
+function login(){
+  var u=document.getElementById('username').value;
+  var p=document.getElementById('password').value;
+  if(u==='suraj' && p==='monitech123'){
+    window.location.href='dashboard.html';
+  } else {
+    document.getElementById('error').style.display='block';
+  }
+}
+</script>
+</body>
+</html>
